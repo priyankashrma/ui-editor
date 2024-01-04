@@ -20,7 +20,7 @@
           }"
           class="element"
           @click.stop="selectElement(index)"
-          @mousedown.prevent="startDrag(index)"
+          @mousedown="startDrag(index)"
           ref="draggableElement"
         >
           <div ref="ElementControlButtons" class="elementControlButtons">
@@ -34,6 +34,8 @@
 
           <template v-if="item.type === 'text'">
             <div
+              @click.stop="handleClick(index)"
+              @blur="handleOnBlur(index)"
               :style="{
                 fontSize: item.fontSize,
                 fontWeight: item.fontWeight,
@@ -142,6 +144,8 @@ export default {
       isDragging: false,
       draggedElement: null,
       dragStart: { x: 0, y: 0 },
+      timeoutId: null,
+      isEditingInline: false,
     };
   },
   methods: {
@@ -150,6 +154,38 @@ export default {
       this.$refs.canvas.style.border = "2px solid blue";
       const currentSelected = { type: "canvas", index: 0 };
       this.$emit("modifyCurrentSelectedElement", currentSelected);
+    },
+    handleClick(index) {
+      if (!this.timeoutId) {
+        this.timeoutId = setTimeout(() => {
+          //single click
+          clearTimeout(this.timeoutId);
+          this.timeoutId = null;
+        }, 300);
+      } else {
+        // double click
+        clearTimeout(this.timeoutId);
+        this.timeoutId = null;
+        this.handleDoubleClick(index);
+      }
+    },
+    handleDoubleClick(index) {
+      const element =
+        this.$refs.draggableElement[index].getElementsByTagName("div")[3];
+      element.contentEditable = true;
+      element.focus();
+      this.isEditingInline = true;
+    },
+    handleOnBlur(index) {
+      const element =
+        this.$refs.draggableElement[index].getElementsByTagName("div")[3];
+      element.contentEditable = false;
+      this.isEditingInline = false;
+      //saving the changes
+      const newText = element.innerText;
+      const updatedSession = this.currentSession;
+      updatedSession.elements[index].content = newText;
+      this.$emit("modifyCurrentSession", updatedSession);
     },
     selectElement(index) {
       this.unselectOthers();
@@ -191,7 +227,7 @@ export default {
       document.addEventListener("mouseup", this.stopDrag);
     },
     handleDrag(event) {
-      if (this.isDragging && this.draggedElement) {
+      if (this.isDragging && this.draggedElement && !this.isEditingInline) {
         const offsetX = event.clientX - this.dragStart.x;
         const offsetY = event.clientY - this.dragStart.y;
         const newLeft = this.draggedElement.offsetLeft + offsetX;
