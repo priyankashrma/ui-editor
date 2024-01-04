@@ -1,6 +1,6 @@
 <template>
   <div class="editingCanvasContainer" @click.self="unselectOthers">
-    <div class="editingCanvasLimitContainer">
+    <div class="editingCanvasLimitContainer" @click.self="unselectOthers">
       <div
         class="editingCanvas"
         ref="canvas"
