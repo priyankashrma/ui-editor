@@ -1,99 +1,101 @@
 <template>
   <div class="editingCanvasContainer" @click.self="unselectOthers">
-    <div
-      class="editingCanvas"
-      ref="canvas"
-      @click="selectCanvas"
-      :style="{
-        background: currentSession.canvas.background,
-        borderRadius: currentSession.canvas.borderRadius + 'px',
-      }"
-    >
+    <div class="editingCanvasLimitContainer">
       <div
-        v-for="(item, index) in currentSession.elements"
-        :key="index"
+        class="editingCanvas"
+        ref="canvas"
+        @click="selectCanvas"
         :style="{
-          position: 'absolute',
-          top: item.top,
-          left: item.left,
+          background: currentSession.canvas.background,
+          borderRadius: currentSession.canvas.borderRadius + 'px',
         }"
-        class="element"
-        @click.stop="selectElement(index)"
-        @mousedown.prevent="startDrag(index)"
-        ref="draggableElement"
       >
-        <div ref="ElementControlButtons" class="elementControlButtons">
-          <div class="editButton" @click="editSelectedElement">
-            <img src="../assets/pencil.png" class="editButtonImage" />
+        <div
+          v-for="(item, index) in currentSession.elements"
+          :key="index"
+          :style="{
+            position: 'absolute',
+            top: item.top,
+            left: item.left,
+          }"
+          class="element"
+          @click.stop="selectElement(index)"
+          @mousedown.prevent="startDrag(index)"
+          ref="draggableElement"
+        >
+          <div ref="ElementControlButtons" class="elementControlButtons">
+            <div class="editButton" @click="editSelectedElement">
+              <img src="../assets/pencil.png" class="editButtonImage" />
+            </div>
+            <div class="removeButton" @click="removeSelectedElement(index)">
+              x
+            </div>
           </div>
-          <div class="removeButton" @click="removeSelectedElement(index)">
-            x
-          </div>
-        </div>
 
-        <template v-if="item.type === 'text'">
-          <div
-            :style="{
-              fontSize: item.fontSize,
-              fontWeight: item.fontWeight,
-              color: item.color,
-              width: '400px',
-            }"
-          >
-            {{ item.content }}
-          </div>
-        </template>
-        <template v-else-if="item.type === 'image'">
-          <img :src="item.src" alt="Image" />
-        </template>
-        <template v-else-if="item.type === 'star'">
-          <img
-            src="../assets/stars.svg"
-            alt="Image"
-            :style="{
-              width: item.width,
-              height: item.height,
-              pointerEvents: 'none',
-            }"
-          />
-          <div v-if="item.content">{{ item.content }}</div>
-        </template>
-        <template v-else-if="item.type === 'button'">
-          <button
-            @click="handleButtonClick"
-            :style="{
-              fontSize: item.fontSize,
-              fontWeight: item.fontWeight,
-              color: item.color,
-              background: item.backgroundColor,
-              width: item.width,
-              padding: '10px',
-              height: '65px',
-              border: '0px',
-              borderRadius: '8px',
-            }"
-          >
-            {{ item.content }}
-          </button>
-        </template>
-        <template v-else-if="item.type === 'textinput'">
-          <input
-            type="text"
-            :style="{
-              fontSize: item.fontSize,
-              fontWeight: item.fontWeight,
-              color: item.color,
-              background: item.backgroundColor,
-              width: item.width,
-              paddingLeft: '10px',
-              paddingRight: '10px',
-              height: '50px',
-              border: '0px',
-              borderRadius: '8px',
-            }"
-            :placeholder="item.content"
-          />
-        </template>
+          <template v-if="item.type === 'text'">
+            <div
+              :style="{
+                fontSize: item.fontSize,
+                fontWeight: item.fontWeight,
+                color: item.color,
+                width: '400px',
+              }"
+            >
+              {{ item.content }}
+            </div>
+          </template>
+          <template v-else-if="item.type === 'image'">
+            <img :src="item.src" alt="Image" />
+          </template>
+          <template v-else-if="item.type === 'star'">
+            <img
+              src="../assets/stars.svg"
+              alt="Image"
+              :style="{
+                width: item.width,
+                height: item.height,
+                pointerEvents: 'none',
+              }"
+            />
+            <div v-if="item.content">{{ item.content }}</div>
+          </template>
+          <template v-else-if="item.type === 'button'">
+            <button
+              @click="handleButtonClick"
+              :style="{
+                fontSize: item.fontSize,
+                fontWeight: item.fontWeight,
+                color: item.color,
+                background: item.backgroundColor,
+                width: item.width,
+                padding: '10px',
+                height: '65px',
+                border: '0px',
+                borderRadius: '8px',
+              }"
+            >
+              {{ item.content }}
+            </button>
+          </template>
+          <template v-else-if="item.type === 'textinput'">
+            <input
+              type="text"
+              :style="{
+                fontSize: item.fontSize,
+                fontWeight: item.fontWeight,
+                color: item.color,
+                background: item.backgroundColor,
+                width: item.width,
+                paddingLeft: '10px',
+                paddingRight: '10px',
+                height: '50px',
+                border: '0px',
+                borderRadius: '8px',
+              }"
+              :placeholder="item.content"
+            />
+          </template>
+        </div>
       </div>
     </div>
   </div>
@@ -239,7 +241,14 @@ export default {
   justify-content: center;
   align-items: center;
 }
-
+.editingCanvasLimitContainer {
+  border: 3px dashed #dfdfdf;
+  width: 575px;
+  height: 575px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .editingCanvas {
   background: white;
   width: 500px;
