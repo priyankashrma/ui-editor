@@ -19,7 +19,7 @@
         }"
         class="element"
         @click.stop="selectElement(index)"
-        @mousedown="startDrag(index)"
+        @mousedown.prevent="startDrag(index)"
         ref="draggableElement"
       >
         <div ref="ElementControlButtons" class="elementControlButtons">
