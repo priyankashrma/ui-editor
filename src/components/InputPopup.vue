@@ -33,7 +33,6 @@ export default {
   },
   methods: {
     handleChange() {
-      console.log(this.currentValue);
       this.$emit("handleChange", this.currentValue);
     },
     closePopup() {

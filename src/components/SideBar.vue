@@ -155,7 +155,6 @@ export default {
       );
     },
     previewAction() {
-      console.log("sss");
       this.$emit("modifyPreviewPopup", true);
     },
   },
