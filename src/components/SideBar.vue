@@ -1,77 +1,69 @@
 <template>
-  <div class="sidebar">
-    <div class="sidebarHeading">Texts</div>
-    <div class="buttonContainer">
+  <div class="flex flex-col basis-1/4 text-left text-slate-50 bg-gray-950 p-2">
+    <div class="text-lg font-bold ml-0.5">Texts</div>
+    <div class="mx-1 my-2">
       <SideBarButton
         text="Add a Heading"
-        font-size="24px"
-        font-weight="bold"
         elementType="text"
+        classes="text-2xl font-bold bg-gray-800 hover:bg-gray-700"
+        elementClasses="text-2xl font-bold"
+        foregroundColor="black"
         @pushTextElement="pushTextElement"
       />
       <SideBarButton
         text="Add a subheading"
-        font-size="18px"
-        font-weight="bold"
         elementType="text"
+        classes="text-lg font-bold bg-gray-800 hover:bg-gray-700"
+        elementClasses="text-lg font-bold"
+        foregroundColor="black"
         @pushTextElement="pushTextElement"
       />
       <SideBarButton
         text="Add a little bit of body text"
-        font-size="13px"
         elementType="text"
+        classes="text-sm bg-gray-800 hover:bg-gray-700"
+        elementClasses="text-sm"
+        foregroundColor="black"
         @pushTextElement="pushTextElement"
       />
     </div>
 
-    <div class="sidebarHeading">Elements</div>
-    <div class="buttonContainer">
+    <div class="text-lg font-bold ml-0.5">Elements</div>
+    <div class="mx-1 my-2">
       <SideBarButton
         text="Text Input"
-        font-size="18px"
-        bgColor="white"
-        foregroundColor="#454545"
         elementType="textinput"
+        classes="text-md font-bold bg-slate-100 text-slate-900 hover:bg-slate-300"
+        elementClasses="text-md font-bold bg-slate-100 text-slate-900  w-80 h-16 px-2 rounded-lg"
         @pushTextInputElement="pushTextInputElement"
       />
-      <div class="twoButtonContainer">
+      <div class="flex justify-between">
         <SideBarButton
           text="Button"
-          font-size="18px"
-          font-weight="bold"
-          text-align="center"
           elementType="button"
+          classes="text-md font-bold bg-gray-800 hover:bg-gray-700"
+          elementClasses="text-lg font-bold bg-gray-800 p-2 mb-2 rounded-lg w-80 h-16 flex justify-center items-center w-full text-slate-100"
           @pushButtonElement="pushButtonElement"
         />
         <SideBarButton
           text=""
-          font-size="18px"
-          font-weight="bold"
-          imageAsset="stars.svg"
-          text-align="center"
-          margin-left="5px"
           elementType="star"
+          imageAsset="stars.svg"
+          classes="bg-gray-800 hover:bg-gray-700 ml-1"
           @pushStarElement="pushStarElement"
         />
       </div>
     </div>
-    <div class="sidebarHeading">Actions</div>
-    <div class="twoButtonContainer">
+    <div class="text-lg font-bold ml-0.5 mb-2">Actions</div>
+    <div class="flex justify-between">
       <SideBarButton
         text="Preview"
-        font-size="18px"
-        font-weight="bold"
-        text-align="center"
-        bgColor="purple"
+        classes="font-bold bg-indigo-900 hover:bg-indigo-800"
         @click="previewAction"
       />
       <SideBarButton
         :text="saveButtonText"
-        font-size="18px"
-        font-weight="bold"
-        text-align="center"
-        margin-left="5px"
-        bgColor="green"
+        classes="font-bold bg-emerald-900 hover:bg-emerald-800 ml-1"
         @click="saveAction"
       />
     </div>
@@ -103,12 +95,10 @@ export default {
       tempSession.elements.push({
         type: "text",
         content: elementInfo.content,
-        fontSize: elementInfo.fontSize,
-        fontWeight: elementInfo.fontWeight,
-        color: "black",
+        classes: elementInfo.classes,
+        color: elementInfo.color,
         top: `${insertAtTopOffset}px`,
         left: "140px",
-        zIndex: 0,
       });
       this.lastInsertedElementTopOffset = insertAtTopOffset;
       this.$emit("modifyCurrentSession", tempSession);
@@ -120,14 +110,9 @@ export default {
       tempSession.elements.push({
         type: "button",
         content: elementInfo.content,
-        fontSize: elementInfo.fontSize,
-        fontWeight: elementInfo.fontWeight,
-        backgroundColor: elementInfo.backgroundColor,
-        width: elementInfo.width,
-        color: "white",
+        classes: elementInfo.classes,
         top: `${insertAtTopOffset}px`,
         left: "140px",
-        zIndex: 0,
       });
       this.lastInsertedElementTopOffset = insertAtTopOffset;
       this.$emit("modifyCurrentSession", tempSession);
@@ -139,14 +124,9 @@ export default {
       tempSession.elements.push({
         type: "textinput",
         content: elementInfo.content,
-        fontSize: elementInfo.fontSize,
-        fontWeight: elementInfo.fontWeight,
-        backgroundColor: elementInfo.backgroundColor,
-        width: elementInfo.width,
-        color: elementInfo.color,
+        classes: elementInfo.classes,
         top: `${insertAtTopOffset}px`,
         left: "140px",
-        zIndex: 0,
       });
       this.lastInsertedElementTopOffset = insertAtTopOffset;
       this.$emit("modifyCurrentSession", tempSession);
@@ -157,11 +137,9 @@ export default {
         parseInt(this.lastInsertedElementTopOffset) + 30;
       tempSession.elements.push({
         type: "star",
-        width: elementInfo.width,
-        height: elementInfo.height,
+        classes: elementInfo.classes,
         top: `${insertAtTopOffset}px`,
         left: "140px",
-        zIndex: 0,
       });
       this.lastInsertedElementTopOffset = insertAtTopOffset;
       this.$emit("modifyCurrentSession", tempSession);
@@ -171,7 +149,10 @@ export default {
       setTimeout(() => {
         this.saveButtonText = "Save";
       }, 500);
-      localStorage.setItem("savedSession", JSON.stringify(this.currentSession));
+      localStorage.setItem(
+        "savedSessionNew",
+        JSON.stringify(this.currentSession)
+      );
     },
     previewAction() {
       console.log("sss");
@@ -180,31 +161,3 @@ export default {
   },
 };
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-.sidebar {
-  display: flex;
-  flex-direction: column;
-  flex: 0.3;
-  height: 100%;
-  background: #2e2e2f;
-  color: #efefef;
-  padding: 10px;
-  text-align: left;
-}
-
-.sidebarHeading {
-  font-size: 16px;
-  font-weight: bold;
-}
-
-.buttonContainer {
-  margin: 10px 0px 40px 0px;
-}
-
-.twoButtonContainer {
-  display: flex;
-  justify-content: space-between;
-}
-</style>

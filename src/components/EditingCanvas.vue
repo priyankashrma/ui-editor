@@ -14,9 +14,11 @@
           v-for="(item, index) in currentSession.elements"
           :key="index"
           :style="{
+            color: item.color,
             position: 'absolute',
             top: item.top,
             left: item.left,
+            minWidth: '54px',
           }"
           class="element"
           @click.stop="selectElement(index)"
@@ -36,12 +38,8 @@
             <div
               @click.stop="handleClick(index)"
               @blur="handleOnBlur(index)"
-              :style="{
-                fontSize: item.fontSize,
-                fontWeight: item.fontWeight,
-                color: item.color,
-                width: '400px',
-              }"
+              :class="item.classes"
+              :style="{ width: '320px' }"
             >
               {{ item.content }}
             </div>
@@ -53,47 +51,20 @@
             <img
               src="../assets/stars.svg"
               alt="Image"
-              :style="{
-                width: item.width,
-                height: item.height,
-                pointerEvents: 'none',
-              }"
+              :class="item.classes"
+              :style="{ pointerEvents: 'none' }"
             />
             <div v-if="item.content">{{ item.content }}</div>
           </template>
           <template v-else-if="item.type === 'button'">
-            <button
-              @click="handleButtonClick"
-              :style="{
-                fontSize: item.fontSize,
-                fontWeight: item.fontWeight,
-                color: item.color,
-                background: item.backgroundColor,
-                width: item.width,
-                padding: '10px',
-                height: '65px',
-                border: '0px',
-                borderRadius: '8px',
-              }"
-            >
+            <button @click="handleButtonClick" :class="item.classes">
               {{ item.content }}
             </button>
           </template>
           <template v-else-if="item.type === 'textinput'">
             <input
               type="text"
-              :style="{
-                fontSize: item.fontSize,
-                fontWeight: item.fontWeight,
-                color: item.color,
-                background: item.backgroundColor,
-                width: item.width,
-                paddingLeft: '10px',
-                paddingRight: '10px',
-                height: '50px',
-                border: '0px',
-                borderRadius: '8px',
-              }"
+              :class="item.classes"
               :placeholder="item.content"
             />
           </template>
@@ -113,34 +84,6 @@ export default {
   },
   data() {
     return {
-      testPre: {
-        canvas: {
-          background: "#fff",
-          borderRadius: 0,
-        },
-        elements: [
-          {
-            type: "text",
-            content: "hello world",
-            fontSize: "24px",
-            fontWeight: "bold",
-            color: "black",
-            top: 20,
-            left: 30,
-            zIndex: 0,
-          },
-          {
-            type: "text",
-            content: "this is the test",
-            fontSize: "18px",
-            fontWeight: "bold",
-            color: "red",
-            top: 50,
-            left: 30,
-            zIndex: 1,
-          },
-        ],
-      },
       isDragging: false,
       draggedElement: null,
       dragStart: { x: 0, y: 0 },
@@ -228,6 +171,7 @@ export default {
     },
     handleDrag(event) {
       if (this.isDragging && this.draggedElement && !this.isEditingInline) {
+        event.preventDefault();
         const offsetX = event.clientX - this.dragStart.x;
         const offsetY = event.clientY - this.dragStart.y;
         const newLeft = this.draggedElement.offsetLeft + offsetX;
