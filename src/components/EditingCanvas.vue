@@ -1,99 +1,74 @@
 <template>
   <div class="editingCanvasContainer" @click.self="unselectOthers">
-    <div
-      class="editingCanvas"
-      ref="canvas"
-      @click="selectCanvas"
-      :style="{
-        background: currentSession.canvas.background,
-        borderRadius: currentSession.canvas.borderRadius + 'px',
-      }"
-    >
+    <div class="editingCanvasLimitContainer" @click.self="unselectOthers">
       <div
-        v-for="(item, index) in currentSession.elements"
-        :key="index"
+        class="editingCanvas"
+        ref="canvas"
+        @click="selectCanvas"
         :style="{
-          position: 'absolute',
-          top: item.top,
-          left: item.left,
+          background: currentSession.canvas.background,
+          borderRadius: currentSession.canvas.borderRadius + 'px',
         }"
-        class="element"
-        @click.stop="selectElement(index)"
-        @mousedown="startDrag(index)"
-        ref="draggableElement"
       >
-        <div ref="ElementControlButtons" class="elementControlButtons">
-          <div class="editButton" @click="editSelectedElement">
-            <img src="../assets/pencil.png" class="editButtonImage" />
+        <div
+          v-for="(item, index) in currentSession.elements"
+          :key="index"
+          :style="{
+            color: item.color,
+            position: 'absolute',
+            top: item.top,
+            left: item.left,
+            minWidth: '54px',
+          }"
+          class="element"
+          @click.stop="selectElement(index)"
+          @mousedown="startDrag(index)"
+          ref="draggableElement"
+        >
+          <div ref="ElementControlButtons" class="elementControlButtons">
+            <div class="editButton" @click="editSelectedElement">
+              <img src="../assets/pencil.png" class="editButtonImage" />
+            </div>
+            <div class="removeButton" @click="removeSelectedElement(index)">
+              x
+            </div>
           </div>
-          <div class="removeButton" @click="removeSelectedElement(index)">
-            x
-          </div>
-        </div>
 
-        <template v-if="item.type === 'text'">
-          <div
-            :style="{
-              fontSize: item.fontSize,
-              fontWeight: item.fontWeight,
-              color: item.color,
-              width: '400px',
-            }"
-          >
-            {{ item.content }}
-          </div>
-        </template>
-        <template v-else-if="item.type === 'image'">
-          <img :src="item.src" alt="Image" />
-        </template>
-        <template v-else-if="item.type === 'star'">
-          <img
-            src="../assets/stars.svg"
-            alt="Image"
-            :style="{
-              width: item.width,
-              height: item.height,
-              pointerEvents: 'none',
-            }"
-          />
-          <div v-if="item.content">{{ item.content }}</div>
-        </template>
-        <template v-else-if="item.type === 'button'">
-          <button
-            @click="handleButtonClick"
-            :style="{
-              fontSize: item.fontSize,
-              fontWeight: item.fontWeight,
-              color: item.color,
-              background: item.backgroundColor,
-              width: item.width,
-              padding: '10px',
-              height: '65px',
-              border: '0px',
-              borderRadius: '8px',
-            }"
-          >
-            {{ item.content }}
-          </button>
-        </template>
-        <template v-else-if="item.type === 'textinput'">
-          <input
-            type="text"
-            :style="{
-              fontSize: item.fontSize,
-              fontWeight: item.fontWeight,
-              color: item.color,
-              background: item.backgroundColor,
-              width: item.width,
-              paddingLeft: '10px',
-              paddingRight: '10px',
-              height: '50px',
-              border: '0px',
-              borderRadius: '8px',
-            }"
-            :placeholder="item.content"
-          />
-        </template>
+          <template v-if="item.type === 'text'">
+            <div
+              @click.stop="handleClick(index)"
+              @blur="handleOnBlur(index)"
+              :class="item.classes"
+              :style="{ width: '320px' }"
+            >
+              {{ item.content }}
+            </div>
+          </template>
+          <template v-else-if="item.type === 'image'">
+            <img :src="item.src" alt="Image" />
+          </template>
+          <template v-else-if="item.type === 'star'">
+            <img
+              src="../assets/stars.svg"
+              alt="Image"
+              :class="item.classes"
+              :style="{ pointerEvents: 'none' }"
+            />
+            <div v-if="item.content">{{ item.content }}</div>
+          </template>
+          <template v-else-if="item.type === 'button'">
+            <button @click="handleButtonClick" :class="item.classes">
+              {{ item.content }}
+            </button>
+          </template>
+          <template v-else-if="item.type === 'textinput'">
+            <input
+              type="text"
+              :class="item.classes"
+              :placeholder="item.content"
+            />
+          </template>
+        </div>
       </div>
     </div>
   </div>
@@ -109,37 +84,11 @@ export default {
   },
   data() {
     return {
-      testPre: {
-        canvas: {
-          background: "#fff",
-          borderRadius: 0,
-        },
-        elements: [
-          {
-            type: "text",
-            content: "hello world",
-            fontSize: "24px",
-            fontWeight: "bold",
-            color: "black",
-            top: 20,
-            left: 30,
-            zIndex: 0,
-          },
-          {
-            type: "text",
-            content: "this is the test",
-            fontSize: "18px",
-            fontWeight: "bold",
-            color: "red",
-            top: 50,
-            left: 30,
-            zIndex: 1,
-          },
-        ],
-      },
       isDragging: false,
       draggedElement: null,
       dragStart: { x: 0, y: 0 },
+      timeoutId: null,
+      isEditingInline: false,
     };
   },
   methods: {
@@ -148,6 +97,38 @@ export default {
       this.$refs.canvas.style.border = "2px solid blue";
       const currentSelected = { type: "canvas", index: 0 };
       this.$emit("modifyCurrentSelectedElement", currentSelected);
+    },
+    handleClick(index) {
+      if (!this.timeoutId) {
+        this.timeoutId = setTimeout(() => {
+          //single click
+          clearTimeout(this.timeoutId);
+          this.timeoutId = null;
+        }, 300);
+      } else {
+        // double click
+        clearTimeout(this.timeoutId);
+        this.timeoutId = null;
+        this.handleDoubleClick(index);
+      }
+    },
+    handleDoubleClick(index) {
+      const element =
+        this.$refs.draggableElement[index].getElementsByTagName("div")[3];
+      element.contentEditable = true;
+      element.focus();
+      this.isEditingInline = true;
+    },
+    handleOnBlur(index) {
+      const element =
+        this.$refs.draggableElement[index].getElementsByTagName("div")[3];
+      element.contentEditable = false;
+      this.isEditingInline = false;
+      //saving the changes
+      const newText = element.innerText;
+      const updatedSession = this.currentSession;
+      updatedSession.elements[index].content = newText;
+      this.$emit("modifyCurrentSession", updatedSession);
     },
     selectElement(index) {
       this.unselectOthers();
@@ -189,11 +170,20 @@ export default {
       document.addEventListener("mouseup", this.stopDrag);
     },
     handleDrag(event) {
-      if (this.isDragging && this.draggedElement) {
+      if (this.isDragging && this.draggedElement && !this.isEditingInline) {
+        event.preventDefault();
         const offsetX = event.clientX - this.dragStart.x;
         const offsetY = event.clientY - this.dragStart.y;
         const newLeft = this.draggedElement.offsetLeft + offsetX;
         const newTop = this.draggedElement.offsetTop + offsetY;
+        if (newLeft + this.draggedElement.offsetWidth > 550 || newLeft < -50) {
+          this.stopDrag();
+          return;
+        }
+        if (newTop + this.draggedElement.offsetHeight > 550 || newTop < -50) {
+          this.stopDrag();
+          return;
+        }
         this.draggedElement.style.left = newLeft + "px";
         this.draggedElement.style.top = newTop + "px";
         this.dragStart = { x: event.clientX, y: event.clientY };
@@ -220,9 +210,6 @@ export default {
     },
   },
 };
-// ondblclick="this.contentEditable=true"
-//             onblur="this.contentEditable=false"
-//             contenteditable="false"
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -234,7 +221,14 @@ export default {
   justify-content: center;
   align-items: center;
 }
-
+.editingCanvasLimitContainer {
+  border: 3px dashed #dfdfdf;
+  width: 575px;
+  height: 575px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .editingCanvas {
   background: white;
   width: 500px;

@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div class="parentContainer">
+    <div class="flex h-full">
       <InputPopup
         v-if="inputPopup"
         :currentSession="currentSession"
@@ -65,68 +65,59 @@ export default {
             type: "text",
             content:
               "All the text and elements in this popup should be editable and dragable",
-            fontSize: "24px",
-            fontWeight: "bold",
             color: "#fff",
-            top: "164px",
-            left: "53px",
-            zIndex: 0,
+            top: "127px",
+            left: "89px",
+            classes: "text-2xl font-bold",
           },
           {
             type: "textinput",
             content: "E-MAIL",
-            fontSize: "18px",
-            backgroundColor: "white",
-            width: "332px",
+            classes:
+              "text-md font-bold bg-slate-100 text-slate-900 w-80 h-16 px-2 rounded-lg",
             color: "#454545",
-            top: "279px",
-            left: "78px",
-            zIndex: 0,
+            top: "241px",
+            left: "94px",
           },
           {
             type: "button",
             content: "SIGN UP",
-            fontSize: "18px",
-            fontWeight: "bold",
-            backgroundColor: "#434343",
-            width: "352px",
+            classes:
+              "text-lg font-bold bg-gray-800 p-2 mb-2 rounded-lg w-80 h-16 flex justify-center items-center text-slate-100",
             color: "white",
-            top: "339px",
-            left: "80px",
-            zIndex: 0,
+            top: "322px",
+            left: "97px",
           },
           {
             type: "text",
             content: "No credit card required. No Surprises",
-            fontSize: "18px",
-            fontWeight: "bold",
             color: "#fff",
-            top: "415px",
-            left: "57px",
+            top: "407px",
+            left: "108px",
             zIndex: 0,
           },
           {
             type: "star",
             width: "54px",
             height: "54px",
-            top: "83px",
-            left: "134px",
+            top: "52px",
+            left: "125px",
             zIndex: 0,
           },
           {
             type: "star",
             width: "54px",
             height: "54px",
-            top: "49px",
-            left: "220px",
+            top: "16px",
+            left: "216px",
             zIndex: 0,
           },
           {
             type: "star",
             width: "54px",
             height: "54px",
-            top: "81px",
-            left: "315px",
+            top: "51px",
+            left: "310px",
             zIndex: 0,
           },
         ],
@@ -150,7 +141,7 @@ export default {
       this.previewPopup = value;
     },
     getSession() {
-      const savedSession = localStorage.getItem("savedSession");
+      const savedSession = localStorage.getItem("savedSessionNew");
       if (savedSession) {
         this.currentSession = JSON.parse(savedSession);
       }
@@ -161,14 +152,8 @@ export default {
   },
 };
 </script>
-
+<style src="./assets/tailwind.css" />
 <style>
-.parentContainer {
-  display: flex;
-  flex-direction: row;
-  height: 100%;
-}
-
 .rightSideContainer {
   flex: 1;
   display: flex;

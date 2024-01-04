@@ -1,6 +1,9 @@
 <template>
-  <button class="button" :style="dynamicStyle" @click="handleButtonClick">
-    <img :src="resolveImgUrl(image)" v-if="imageAsset" class="image" />
+  <button
+    :class="`${classes} p-2 mb-2 rounded-lg w-full flex justify-center items-center`"
+    @click="handleButtonClick"
+  >
+    <img :src="resolveImgUrl(image)" v-if="imageAsset" class="w-8 h-8" />
     {{ text }}
   </button>
 </template>
@@ -10,27 +13,15 @@ export default {
   name: "SideBarButton",
   props: {
     text: String,
-    fontSize: String,
-    fontWeight: String,
-    bgColor: String,
-    foregroundColor: String,
-    textAlign: String,
     imageAsset: String,
-    marginLeft: String,
     elementType: String,
+    elementClasses: String,
+    classes: String,
+    foregroundColor: String,
+    bgColor: String,
   },
 
   computed: {
-    dynamicStyle() {
-      return {
-        fontSize: this.fontSize,
-        fontWeight: this.fontWeight,
-        backgroundColor: this.bgColor ? this.bgColor : "#434343",
-        color: this.foregroundColor ? this.foregroundColor : "white",
-        textAlign: this.textAlign ? this.textAlign : "left",
-        marginLeft: this.marginLeft ? this.marginLeft : 0,
-      };
-    },
     imageSrc() {
       return new URL(this.image, import.meta.url);
     },
@@ -43,65 +34,26 @@ export default {
     handleButtonClick() {
       if (this.elementType === "text") {
         this.$emit("pushTextElement", {
-          fontSize: this.fontSize,
-          fontWeight: this.fontWeight,
+          classes: this.elementClasses,
           content: this.text,
+          color: this.foregroundColor,
         });
       } else if (this.elementType === "button") {
         this.$emit("pushButtonElement", {
-          fontSize: this.fontSize,
-          fontWeight: this.fontWeight,
+          classes: this.elementClasses,
           content: this.text,
-          backgroundColor: this.bgColor ? this.bgColor : "#434343",
-          width: "352px",
         });
       } else if (this.elementType === "textinput") {
         this.$emit("pushTextInputElement", {
-          fontSize: this.fontSize,
-          fontWeight: this.fontWeight,
-          content: this.text,
-          backgroundColor: this.bgColor ? this.bgColor : "#434343",
-          color: this.foregroundColor ? this.foregroundColor : "white",
-          width: "332px",
+          classes: this.elementClasses,
+          content: "Placeholder...",
         });
       } else if (this.elementType === "star") {
         this.$emit("pushStarElement", {
-          width: "54px",
-          height: "54px",
+          classes: this.elementClasses,
         });
       } else this.$emit("click");
     },
   },
 };
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-.button {
-  width: 100%;
-  height: 50px;
-  background: #434343;
-  color: white;
-  border: 0px;
-  cursor: pointer;
-  margin-top: 10px;
-  text-align: left;
-  padding: 10px;
-  border-radius: 5px;
-  font-size: var(--font-size);
-  transition: 0.2s;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.image {
-  height: 30px;
-  width: 30px;
-  margin-right: 10px;
-}
-
-.button:hover {
-  transform: scale(0.96);
-}
-</style>
