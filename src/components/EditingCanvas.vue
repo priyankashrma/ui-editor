@@ -194,6 +194,14 @@ export default {
         const offsetY = event.clientY - this.dragStart.y;
         const newLeft = this.draggedElement.offsetLeft + offsetX;
         const newTop = this.draggedElement.offsetTop + offsetY;
+        if (newLeft + this.draggedElement.offsetWidth > 550 || newLeft < -50) {
+          this.stopDrag();
+          return;
+        }
+        if (newTop + this.draggedElement.offsetHeight > 550 || newTop < -50) {
+          this.stopDrag();
+          return;
+        }
         this.draggedElement.style.left = newLeft + "px";
         this.draggedElement.style.top = newTop + "px";
         this.dragStart = { x: event.clientX, y: event.clientY };
@@ -220,9 +228,6 @@ export default {
     },
   },
 };
-// ondblclick="this.contentEditable=true"
-//             onblur="this.contentEditable=false"
-//             contenteditable="false"
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
