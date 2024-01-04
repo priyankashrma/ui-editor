@@ -83,7 +83,7 @@ export default {
             type: "button",
             content: "SIGN UP",
             classes:
-              "text-lg font-bold bg-gray-800 p-2 mb-2 rounded-lg w-80 h-16 flex justify-center items-center w-full text-slate-100",
+              "text-lg font-bold bg-gray-800 p-2 mb-2 rounded-lg w-80 h-16 flex justify-center items-center text-slate-100",
             color: "white",
             top: "322px",
             left: "97px",
