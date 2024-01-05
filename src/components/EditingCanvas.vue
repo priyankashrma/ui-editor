@@ -174,16 +174,20 @@ export default {
         event.preventDefault();
         const offsetX = event.clientX - this.dragStart.x;
         const offsetY = event.clientY - this.dragStart.y;
-        const newLeft = this.draggedElement.offsetLeft + offsetX;
-        const newTop = this.draggedElement.offsetTop + offsetY;
-        if (newLeft + this.draggedElement.offsetWidth > 550 || newLeft < -50) {
-          this.stopDrag();
-          return;
-        }
-        if (newTop + this.draggedElement.offsetHeight > 550 || newTop < -50) {
-          this.stopDrag();
-          return;
-        }
+
+        const currentLeft = this.draggedElement.offsetLeft + offsetX;
+        const currentTop = this.draggedElement.offsetTop + offsetY;
+
+        const parentWidth = 550;
+        const parentHeight = 550;
+
+        // Ensure the element stays within the bounds
+        const maxX = parentWidth - this.draggedElement.offsetWidth;
+        const maxY = parentHeight - this.draggedElement.offsetHeight;
+
+        const newLeft = Math.max(-50, Math.min(currentLeft, maxX));
+        const newTop = Math.max(-50, Math.min(currentTop, maxY));
+
         this.draggedElement.style.left = newLeft + "px";
         this.draggedElement.style.top = newTop + "px";
         this.dragStart = { x: event.clientX, y: event.clientY };
